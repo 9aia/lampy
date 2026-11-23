@@ -1,6 +1,19 @@
 # lampy — docs/reference generation contract for `cypera`
-# TODO: declare generators as they come online —
-# [crate_map] layers + [[crate_map.splices]], [cli], [config].
-# Schema lives in ../cypera crates/cypera-core/src/repo_config.rs.
-# Until then `docs/package.json`'s docs:check has nothing to
-# verify — keep it failing loudly rather than vacuously green.
+# (`cypera gen crate-map`, discovered upward from --repo).
+# Replaces the retired docs/gen-*.py wrapper; schema lives in
+# ../cypera crates/cypera-core/src/repo_config.rs.
+
+[crate_map]
+
+[crate_map.layers]
+"lampy-telemetry" = "port"
+"lampy-metrics-file" = "adapter"
+"lampy-telemetry-otel" = "adapter"
+"lampy-xtask" = "tooling"
+
+[[crate_map.splices]]
+target = "docs/explanation/architecture.md"
+marker = "<!-- crate-map -->"
+
+[check]
+profile = "library"

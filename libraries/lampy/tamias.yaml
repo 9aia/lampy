@@ -1,0 +1,19 @@
+# lampy — the telemetry expertise pack (P-042 / PL-023).
+#
+# `type: files` — lampy is a library, not a command: there is no
+# `lampy` CLI and no ops surface, so no `tamias-driver-lampy` and no
+# `bins[]`. The pack ships the reference OTEL Collector config
+# consumers point `LAMPY_OTEL_ENDPOINT` at; install it wherever the
+# org's collector lives:
+#
+#   tamias install ./libraries/lampy        # → <store>/lampy/<ver>/
+#
+# The collector itself is an ops concern (systemd unit, port 4318);
+# this pack is the config-of-record.
+name: lampy
+version: "0.1.0"
+type: files
+description: >-
+  Telemetry expertise — OTEL port + OTLP impl + the org env contract.
+  Ships the reference otel-collector.yaml (OTLP/HTTP :4318 in,
+  debug + Prometheus exporters out).

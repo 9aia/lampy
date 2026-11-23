@@ -1,0 +1,12 @@
+# sturn — coordination over git refs
+[repo]
+dir = "."
+crates:
+lampy-telemetry
+lampy-telemetry-otel
+lampy-metrics-file
+
+libraries:
+lampy
+
+xtask:
