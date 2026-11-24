@@ -8,7 +8,7 @@ members = [
 ]
 
 [workspace.package]
-version = "0.1.0"
+version = "0.2.0"
 edition = "2024"
 rust-version = "1.85"
 license = "MIT"
@@ -21,9 +21,9 @@ categories = ["development-tools::debugging"]
 readme = "README.md"
 
 [workspace.dependencies]
-lampy-telemetry = { path = "crates/lampy-telemetry", version = "0.1.0" }
-lampy-telemetry-otel = { path = "crates/lampy-telemetry-otel", version = "0.1.0" }
-lampy-metrics-file = { path = "crates/lampy-metrics-file", version = "0.1.0" }
+lampy-telemetry = { path = "crates/lampy-telemetry", version = "0.2.0" }
+lampy-telemetry-otel = { path = "crates/lampy-telemetry-otel", version = "0.2.0" }
+lampy-metrics-file = { path = "crates/lampy-metrics-file", version = "0.2.0" }
 
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
