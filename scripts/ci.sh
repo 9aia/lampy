@@ -14,11 +14,10 @@ export SCCACHE_CONF="${SCCACHE_CONF:-file://$HOME/.cache/sccache}"
 cargo xtask check
 cargo xtask test
 
-# NOTE: no docs-check leg — lampy's cypera.toml declares the
-# `library` docs contract but the docs worktree is an unborn
-# branch (never populated), so `cypera check` fails on
-# docs-site/generated-fresh today. Wiring the leg belongs with
-# standing the docs site up, not with this gate.
+# Docs contract — cypera check + docs/ drift gate. Materializes a
+# detached docs-branch worktree when the run tree lacks one (bupha
+# gate runs), so it is hermetic in CI.
+bash scripts/docs-check.sh
 
 # --- mimus standard: org conformance leg (9aia-standard pack) ------
 # Specs + runner ship in the 9aia-standard tamias pack; `tamias
