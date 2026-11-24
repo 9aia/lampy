@@ -1,0 +1,125 @@
+#![cfg_attr(coverage, feature(coverage_attribute))]
+//! xtask — repo chores. `cargo xtask <verb>` via the alias in
+//! `.cargo/config.toml`.
+//!
+//! - `check`    — `cargo fmt --check` + `cargo clippy -D warnings`
+//! - `test`     — `cargo nextest run` when installed, else `cargo test`
+//! - `coverage` — `cargo llvm-cov` (HTML → target/llvm-cov/html);
+//!   extra args pass through, e.g. `--fail-under-lines 97`
+//! - `package`  — `cargo package --workspace` (verify: builds each packaged crate)
+//! - `site`     — build the docs site (docs/ worktree, VitePress)
+
+use std::process::{Command, ExitStatus};
+
+fn run(args: &[&str]) -> ExitStatus {
+    let empty: &[&str] = &[];
+    let (prog, rest) = args.split_first().unwrap_or((&"true", empty));
+    Command::new(prog).args(rest).status().unwrap_or_else(|e| {
+        eprintln!("xtask: failed to spawn {prog}: {e}");
+        std::process::exit(1)
+    })
+}
+
+fn have_cargo_sub(sub: &str) -> bool {
+    Command::new("cargo")
+        .args([sub, "--version"])
+        .stdout(std::process::Stdio::null())
+        .stderr(std::process::Stdio::null())
+        .status()
+        .is_ok_and(|s| s.success())
+}
+
+fn have(prog: &str) -> bool {
+    Command::new(prog)
+        .arg("--version")
+        .stdout(std::process::Stdio::null())
+        .stderr(std::process::Stdio::null())
+        .status()
+        .is_ok_and(|s| s.success())
+}
+
+fn run_in(dir: &str, args: &[&str]) -> ExitStatus {
+    let empty: &[&str] = &[];
+    let (prog, rest) = args.split_first().unwrap_or((&"true", empty));
+    Command::new(prog)
+        .args(rest)
+        .current_dir(dir)
+        .status()
+        .unwrap_or_else(|e| {
+            eprintln!("xtask: failed to spawn {prog}: {e}");
+            std::process::exit(1)
+        })
+}
+
+fn site() -> ExitStatus {
+    if !std::path::Path::new("docs/package.json").exists() {
+        eprintln!("no docs/ worktree — `git worktree add --orphan -b docs docs` first");
+        std::process::exit(1);
+    }
+    let pkg = if have("bun") { "bun" } else { "npm" };
+    let _ = run_in("docs", &[pkg, "install"]);
+    run_in("docs", &[pkg, "run", "docs:build"])
+}
+
+fn main() {
+    let args: Vec<String> = std::env::args().skip(1).collect();
+    let (verb, rest) = args
+        .split_first()
+        .map_or(("help", &[][..]), |(v, r)| (v.as_str(), r));
+    let rest_refs: Vec<&str> = rest.iter().map(String::as_str).collect();
+
+    let status = match verb {
+        "check" => {
+            let fmt = run(&["cargo", "fmt", "--all", "--", "--check"]);
+            if fmt.success() {
+                run(&[
+                    "cargo",
+                    "clippy",
+                    "--workspace",
+                    "--all-targets",
+                    "--",
+                    "-D",
+                    "warnings",
+                ])
+            } else {
+                fmt
+            }
+        }
+        "test" => {
+            if have_cargo_sub("nextest") {
+                run(&["cargo", "nextest", "run"])
+            } else {
+                run(&["cargo", "test", "--workspace"])
+            }
+        }
+        "coverage" => {
+            if have_cargo_sub("llvm-cov") {
+                let mut a = vec!["cargo", "llvm-cov", "--workspace"];
+                a.extend(rest_refs.iter().copied());
+                run(&a)
+            } else {
+                eprintln!("xtask: cargo-llvm-cov not installed");
+                std::process::exit(1)
+            }
+        }
+        "package" => run(&["cargo", "package", "--workspace", "--allow-dirty"]),
+        "site" => site(),
+        _ => {
+            eprintln!("usage: cargo xtask <check|test|coverage|package|site>");
+            std::process::exit(2);
+        }
+    };
+    std::process::exit(status.code().unwrap_or(1));
+}
+
+#[cfg(test)]
+#[allow(clippy::expect_used)]
+mod tests {
+    #[test]
+    fn workspace_manifest_parses() {
+        let manifest =
+            std::fs::read_to_string(concat!(env!("CARGO_MANIFEST_DIR"), "/../Cargo.toml"))
+                .expect("workspace Cargo.toml readable");
+        assert!(manifest.contains("[workspace]"));
+    }
+}

@@ -1,0 +1,32 @@
+[package]
+name = "lampy-telemetry-otel"
+description = "OTEL impl of the lampy telemetry port — tracing→OTLP span layer, W3C propagation, tracer/meter provider builders"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+license.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+lampy-telemetry.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
+http.workspace = true
+# Pinned exact (org convention): 0.33 pairs with
+# tracing-opentelemetry 0.34; 0.33.1 shipped <7 days before
+# integration.
+opentelemetry = "=0.33.0"
+opentelemetry_sdk = { version = "=0.33.0", default-features = false, features = [
+  "trace",
+  "metrics",
+] }
+opentelemetry-otlp = { version = "=0.33.0", default-features = false, features = [
+  "http-proto",
+  "reqwest-blocking-client",
+  "trace",
+  "metrics",
+] }
+tracing-opentelemetry = { version = "=0.34.0", default-features = false }

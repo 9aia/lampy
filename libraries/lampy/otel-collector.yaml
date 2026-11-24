@@ -1,0 +1,43 @@
+# otel-collector — the 9aia org reference collector (lampy pack).
+#
+# Receives OTLP/HTTP from every lampy consumer on :4318 and fans out
+# to the debug exporter (stdout, for smoke tests) and the Prometheus
+# exporter (:8889/metrics) for scraping. Traces and metrics share the
+# single OTLP receiver — lampy's env contract appends /v1/traces or
+# /v1/metrics per signal.
+#
+# Deploy: `otelcol-contrib --config otel-collector.yaml` under the
+# host's service manager; consumers set
+#   LAMPY_OTEL_ENDPOINT=http://<host>:4318
+# (per-service `<ALIAS>_OTEL_ENDPOINT` and the standard
+# OTEL_EXPORTER_OTLP_* vars keep working — see lampy-telemetry).
+
+receivers:
+  otlp:
+    protocols:
+      http:
+        endpoint: 0.0.0.0:4318
+
+processors:
+  batch: {}
+
+exporters:
+  # Smoke/debug — every span/metric to stdout.
+  debug:
+    verbosity: basic
+  # Prometheus scrape endpoint for dashboards/alerts.
+  prometheus:
+    endpoint: 0.0.0.0:8889
+    resource_to_telemetry_conversion:
+      enabled: true
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [debug]
+    metrics:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [prometheus]

@@ -1,0 +1,59 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/lampy-telemetry",
+    "crates/lampy-telemetry-otel",
+    "crates/lampy-metrics-file",
+    "xtask",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.85"
+license = "MIT"
+repository = "https://github.com/9aia/lampy"
+description = "Telemetry expertise — OTEL port, OTLP impl, env contract for the 9aia ecosystem"
+homepage = "https://9aia.com/lampy"
+authors = ["9aia"]
+keywords = ["telemetry", "opentelemetry", "otel", "tracing"]
+categories = ["development-tools::debugging"]
+readme = "README.md"
+
+[workspace.dependencies]
+lampy-telemetry = { path = "crates/lampy-telemetry", version = "0.1.0" }
+lampy-telemetry-otel = { path = "crates/lampy-telemetry-otel", version = "0.1.0" }
+lampy-metrics-file = { path = "crates/lampy-metrics-file", version = "0.1.0" }
+
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+http = "1"
+thiserror = "2.0"
+tempfile = "3"
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+unexpected_cfgs = { level = "warn", check-cfg = ["cfg(coverage)"] }
+
+[workspace.lints.clippy]
+correctness = { level = "deny", priority = -1 }
+suspicious = { level = "deny", priority = -1 }
+perf = { level = "deny", priority = -1 }
+style = { level = "warn", priority = -1 }
+complexity = { level = "warn", priority = -1 }
+pedantic = { level = "warn", priority = -1 }
+unwrap_used = "warn"
+expect_used = "warn"
+missing_errors_doc = "allow"
+missing_panics_doc = "allow"
+must_use_candidate = "allow"
+module_name_repetitions = "allow"
+doc_markdown = "allow"
+similar_names = "allow"
+too_many_lines = "allow"
+cast_precision_loss = "allow"
+cast_possible_truncation = "allow"
+cast_sign_loss = "allow"
+expl_impl_clone_on_copy = "allow"
+cast_lossless = "allow"
+struct_excessive_bools = "allow"
