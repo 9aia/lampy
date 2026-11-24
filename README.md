@@ -3,6 +3,14 @@
 Telemetry expertise for the 9aia ecosystem — one OTEL port, one OTLP
 impl, one env contract. Named for *Lampyridae*, the firefly family.
 
+## Install
+
+Consumers pin git deps:
+
+```bash
+cargo add lampy-telemetry --git https://github.com/9aia/lampy
+```
+
 Lampy consolidates the near-verbatim `*-telemetry` crates that grew
 inside hypha, sepia, bupha, and peregrin (P-042 / PL-023): the
 `tracing` → OTLP span layer, W3C `traceparent` propagation, the

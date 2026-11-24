@@ -427,21 +427,21 @@ dependencies = [
 
 [[package]]
 name = "lampy-metrics-file"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "tempfile",
 ]
 
 [[package]]
 name = "lampy-telemetry"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "thiserror",
 ]
 
 [[package]]
 name = "lampy-telemetry-otel"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "http",
  "lampy-telemetry",
@@ -455,7 +455,7 @@ dependencies = [
 
 [[package]]
 name = "lampy-xtask"
-version = "0.1.0"
+version = "0.2.0"
 
 [[package]]
 name = "lazy_static"
